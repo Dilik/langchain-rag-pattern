@@ -25,7 +25,13 @@ Setup using devcontainer or venv
 
 - python -m venv .venv
 - source .venv/bin/activate `(Linux, MacOS)` or .venv/Scripts/activate `(Windows)`
+- pip install -U pip wheel setuptools
 - pip install -r requirements.txt
+
+#### Azure Resources
+- Deploy Azure OpenAI Service - [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal)
+- Deploy a Model in Azure OpenAI Studio
+- More References - [Azure OpenAI Get Started](https://learn.microsoft.com/en-us/azure/ai-services/openai/quickstart?tabs=command-line&pivots=programming-language-python)
 
 ### Samples
 
