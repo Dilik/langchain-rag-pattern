@@ -1,15 +1,11 @@
-import json
 import os
-import uuid
 import openai
+import uuid
+from pprint import pprint
 from langchain.llms import AzureOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationChain
-from langchain.memory import (
-    ConversationBufferWindowMemory,
-    ConversationSummaryMemory,
-    ConversationEntityMemory,
-)
+from langchain.memory import ConversationBufferWindowMemory, ConversationSummaryMemory, ConversationEntityMemory
 from langchain.memory import CombinedMemory
 
 # read local .env file
@@ -21,45 +17,48 @@ class Bot:
         self,
         openai_api_key=os.getenv("AZURE_OAI_KEY"),
         openai_api_base=os.getenv("AZURE_OAI_ENDPOINT"),
-        openai_api_version="2020-08-01",
-        aoai_deplpoyment_name="openai-workshop-deployment-environment",
-        aoai_model_name="gpt-35-turbo",
+        openai_api_version=os.getenv("OPENAI_API_VERSION"),
+        aoai_deplpoyment_name=os.getenv("AZURE_OAI_MODEL_GPT_3")
     ):
         openai.api_type = "azure"
         openai.api_base = openai_api_base
         openai.api_version = openai_api_version
         openai.api_key = openai_api_key
 
+        os.environ["OPENAI_API_TYPE"] = openai.api_type
+        os.environ["OPENAI_API_BASE"] = openai.api_base
+        os.environ["OPENAI_API_KEY"] = openai.api_key
+        os.environ["OPENAI_API_VERSION"] = openai.api_version
+
         # The model
         self.llm = AzureOpenAI(
-            deployment_name=aoai_deplpoyment_name,
-            model_name=aoai_model_name,
-            openai_api_key=openai_api_key,
+            deployment_name=aoai_deplpoyment_name
         )
         self.conversations = {}
 
     # Internal function to create a new conversation, UID as argument
     def _create_conversation(self, conversation_id):
         # Memory
-        conv_memory = ConversationBufferWindowMemory(k=4, input_key="input")
 
         ent_memory = ConversationEntityMemory(
             llm=self.llm,
             input_key="input",
         )
-
+        
         summary_memory = ConversationSummaryMemory(
-            llm=self.llm, memory_key="summary", input_key="input"
+            llm=self.llm, 
+            memory_key="summary", 
+            input_key="input"
         )
 
         # Combined
-        memory = CombinedMemory(memories=[conv_memory, summary_memory, ent_memory])
+        memory = CombinedMemory(memories=[summary_memory, ent_memory])
         TEMPLATE = """
 		The following is a friendly conversation between a human and an AI.
         The AI is talkative and provides lots of specific details from its context.
         If the AI does not know the answer to a question, it truthfully says it does not know.
 
-		Context:
+        Context: 
 		{entities}
 
 		Summary of conversation:
@@ -67,6 +66,7 @@ class Bot:
 
 		Last 3 lines of conversation:
 		{history}
+
 		Human: {input}
 		AI:
 		"""
@@ -96,13 +96,8 @@ class Bot:
 
 
 if __name__ == "__main__":
-    # Load the config
-    with open("settings.json", "r") as f:
-        settings = json.load(f)
-    with open("secrets.json", "r") as f:
-        secrets = json.load(f)
     # Create the bot
-    bot = Bot(**secrets, **settings)
+    bot = Bot()
     # Generate a response
     conversation_id, response = bot.generate_response(None, "Hello! How are you?")
     print(conversation_id, response)
