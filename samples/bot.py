@@ -5,7 +5,7 @@ from pprint import pprint
 from langchain.llms import AzureOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferWindowMemory, ConversationSummaryMemory, ConversationEntityMemory
+from langchain.memory import ConversationSummaryMemory, ConversationEntityMemory
 from langchain.memory import CombinedMemory
 
 # read local .env file
