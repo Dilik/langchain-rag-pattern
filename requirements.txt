@@ -9,3 +9,5 @@ unstructured[local-inference]==0.5.7
 gunicorn==20.1.0
 azure-search-documents==11.4.0b6
 azure-identity
+panel
+jupyter_bokeh
